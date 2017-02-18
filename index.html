@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>jsbin</title>
+    <link rel="stylesheet" href="lib/codemirror.css">
+    <link rel="stylesheet" href="monokai.css">
+    <style>
+    body {
+        margin: 0;
+        font-family: "Consolas", '微软雅黑';
+    }
+    
+    .container {
+        box-sizing: border-box;
+        width: 100%;
+        height: 96vh;
+        display: flex;
+    }
+    
+    .container>div {
+        border: 1px solid;
+        width: 100px;
+        min-width: 0px;
+        flex-grow: 1;
+        height: 100%;
+        color: #fff;
+        font-size: 20px;
+        background-color: #272822;
+        box-sizing: border-box;
+    }
+    
+    .code>div {
+        box-sizing: border-box;
+        height: 96%;
+        font-size: 14px;
+        font-family: "Consolas", '微软雅黑';
+    }
+    
+    #output {
+        border: 1px solid #000;
+        background-color: #fff;
+        color: #000;
+        font-size: 0;
+    }
+    
+    #output>span {
+        font-size: 20px;
+        display: inline-block;
+        height: 4%;
+    }
+    
+    .content {
+        width: 100%;
+        height: 96%;
+        display: block;
+        background-color: #fff;
+        overflow-y: scroll;
+        border: none;
+    }
+    
+    .show {
+        display: none;
+    }
+    
+    .btns>button {
+        width: 100px;
+        font-size: 16px;
+    }
+    
+    #addlib,
+    .btns>.runjs {
+        width: 120px;
+        font-size: 16px;
+    }
+    </style>
+</head>
+
+<body>
+    <div class="jsbin">
+        <div class="btns">
+            <button class="htmlbtn">HTML</button>
+            <button class="cssbtn">CSS</button>
+            <button class="jsbtn">JavaScript</button>
+            <button class="outputbtn">Output</button>
+            <select name="addLibrary" id="addlib">
+                <option readonly>Add Library</option>
+                <option value="https://code.jquery.com/jquery-3.1.0.js">jQuery</option>
+                <option value="https://cdn.jsdelivr.net/lodash/4/lodash.min.js">Lodash</option>
+                <option value="https://fb.me/react-15.1.0.js">React</option>
+                <option value="https://unpkg.com/vue/dist/vue.js">Vue</option>
+                <option value="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.0/angular.min.js">Angular</option>
+            </select>
+            <button class="runjs">Run with JS</button>
+            <label for="autorunjs">Auto-run JS</label>
+            <input type="checkbox" id="autorunjs">
+        </div>
+        <div class="container">
+            <div id="code1" class="code">html</div>
+            <div id="code2" class="code">css</div>
+            <div id="code3" class="code">js</div>
+            <div id="output">
+                <span>output</span>
+                <iframe class="content"></iframe>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="jQuery/jquery-3.1.1.js"></script>
+<script src="marked.min.js"></script>
+<script src="lib/codemirror.js"></script>
+<script src="emmet.min.js"></script>
+<script src="javascript/javascript.js"></script>
+<script src="xml/xml.js"></script>
+<script src="css/css.js"></script>
+<script>
+var myTextarea = document.getElementById('code1')
+var editor1 = CodeMirror(code1, {
+    lineNumbers: true,
+    mode: 'xml',
+    theme: 'monokai',
+});
+
+var editor2 = CodeMirror(code2, {
+    lineNumbers: true,
+    mode: 'css',
+    theme: 'monokai',
+});
+
+var editor3 = CodeMirror(code3, {
+    lineNumbers: true,
+    mode: 'javascript',
+    theme: 'monokai',
+});
+
+editor1.setValue(`<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+</head>
+<body>
+  
+</body>
+</html>`)
+
+function getContent() {
+    $('.content')[0].contentWindow.document.open()
+    if ($('#autorunjs')[0].checked == true) {
+        $('.content')[0].contentWindow.document.write(editor1.getValue() + '<style>' + editor2.getValue() + '</style>' + '<script>' + editor3.getValue() + '</\script>')
+    }else{
+        $('.content')[0].contentWindow.document.write(editor1.getValue() + '<style>' + editor2.getValue() + '</style>')
+    }
+}
+
+$('.runjs').click(function() {
+    $('.content')[0].contentWindow.document.write(editor1.getValue() + '<style>' + editor2.getValue() + '</style>' + '<script>' + editor3.getValue() + '</\script>')
+})
+
+$('#code1').keyup(getContent)
+$('#code2').keyup(getContent)
+$('#code3').keyup(getContent)
+
+function toggleShow(btn,el) {
+   $(btn).click(function() {
+       $(el).toggleClass('show')
+   })
+}
+
+toggleShow('.htmlbtn','#code1')
+toggleShow('.cssbtn','#code2')
+toggleShow('.jsbtn','#code3')
+toggleShow('.outputbtn','#output')
+$('#code3').addClass('show')
+
+$('#addlib').change(function(){
+    var src=`<script src="${this.value}"><\/script>`
+    var replacehtml=editor1.getValue().replace('</head>','  '+src+'\n</head>')
+    editor1.setValue(replacehtml)
+})
+</script>
+
+</html>
